@@ -1,10 +1,11 @@
 =============================
 NCAA Baseball Stats Scraper
-Author: Updates by Meyappan 
+
+Author: Meyappan (Edited code by Rodrigo Zamith)
 
 The initial script was written by Rodrigo Zamith for NCAA basketball. I made changes to his script recently when using it to develop my NCAA app (hosted on the shiny website). See other repo.
 
-But most recently, I have used the exact structure that Rodrigo used and scraped NCAA baseball data. 
+But most recently, I used the exact structure that Rodrigo used to scrape NCAA baseball data. The NCAA website has the same structure for all sports. 
 
 Currently, the only code that has not been updated yet is create_ind_stats.py
 
