@@ -9,8 +9,8 @@ Version: 1.3
 3. Updated the pitching url for team stats. 
 
 ------
-Version: 1.2 
-Author: Meyappan 
+Version: 1.2      
+Author: Meyappan      
 ------
 
 Author: Meyappan (Edited code by Rodrigo Zamith)
