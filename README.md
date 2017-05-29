@@ -3,11 +3,13 @@ NCAA Baseball Stats Scraper
 Author: Meyappan 
 Version: 1.3
 
-Updated the create_ind_stats.py function.
+1. Updated the create_ind_stats.py function.
+2. Added a year Index Dictionary to match year id's 
+3. Updated the pitching url for team stats. 
 
-=============================
-Author: Meyappan 
+=======
 Version: 1.2 
+Author: Meyappan 
 =======
 
 Author: Meyappan (Edited code by Rodrigo Zamith)
@@ -20,10 +22,10 @@ Currently, the only code that has not been updated yet is create_ind_stats.py
 
 
 
-=============================
+=======
 Author: Rodrigo Zamith  
 Version: 1.1
-
+=======
 
 Usage
 -----
