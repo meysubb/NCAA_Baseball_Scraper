@@ -1,8 +1,7 @@
 
-data/summary_hitting_data.tsv
-
 *.tsv
 
 *.pyc
 
 *.pyc
+
