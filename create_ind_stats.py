@@ -1,8 +1,7 @@
 #!/usr/bin/python
 ##############################################################
-# Program name: NCAA Basketball Stats Scraper (Individual Stats Module)
-# Version: 1.0
-# By: Rodrigo Zamith
+# Program name: NCAA Baseball Stats Scraper
+# Version: 1.3
 # License: MPL 2.0 (see LICENSE file in root folder)
 # Additional thanks: 
 ##############################################################
@@ -17,17 +16,17 @@ from bs4 import BeautifulSoup
 if (scrapersettings.ind_game_stats == 1):
     # Create the file headings
     game_data_w = open(scrapersettings.game_data, "w")
-    game_data_w.writelines("game_id\tgame_date\taway_team_id\taway_team_name\taway_team_minutes\taway_team_fgm\taway_team_fga\taway_team_three_fgm\taway_team_three_fga\taway_team_ft\taway_team_fta\taway_team_pts\taway_team_offreb\taway_team_defreb\taway_team_totreb\taway_team_ast\taway_team_to\taway_team_stl\taway_team_blk\taway_team_fouls\thome_team_id\thome_team_name\thome_team_minutes\thome_team_fgm\thome_team_fga\thome_team_three_fgm\thome_team_three_fga\thome_team_ft\thome_team_fta\thome_team_pts\thome_team_offreb\thome_team_defreb\thome_team_totreb\thome_team_ast\thome_team_to\thome_team_stl\thome_team_blk\thome_team_fouls\tneutral_site\n")
+    game_data_w.writelines("game_id\tgame_date\taway_team_id\taway_team_name\taway_g\taway_r\taway_ab\taway_h\taway_two_b\taway_three_b\taway_total_b\taway_hr\taway_rbi\taway_bb\taway_hbp\taway_sf\taway_sh\taway_k\taway_dp\taway_sb\taway_cs\taway_picked\thome_team_id\thome_team_name\thome_g\thome_r\thome_ab\thome_h\thome_two_b\thome_three_b\thome_total_b\thome_hr\thome_rbi\thome_bb\thome_hbp\thome_sf\thome_sh\thome_k\thome_dp\thome_sb\thome_cs\thome_picked\n")
 
 if (scrapersettings.ind_player_stats == 1):
     # Create the file headings
     player_data_w = open(scrapersettings.player_data, "w")
-    player_data_w.writelines("player_id\tplayer_name\tteam_id\tteam_name\tgame\tpos\tminutes\tfgm\tfga\tthree_fgm\tthree_fga\tft\tfta\tpts\toffreb\tdefreb\ttotreb\tast\tto\tstl\tblk\tfouls\tgame_date\tneutral_site\n")
+    #player_data_w.writelines("player_id\tplayer_name\tteam_id\tteam_name\tgame\tpos\tminutes\tfgm\tfga\tthree_fgm\tthree_fga\tft\tfta\tpts\toffreb\tdefreb\ttotreb\tast\tto\tstl\tblk\tfouls\tgame_date\tneutral_site\n")
 
 if (scrapersettings.ind_team_stats == 1):
     # Create the file headings
     team_data_w = open(scrapersettings.team_data, "w")
-    team_data_w.writelines("game_id\tgame_date\tsite\tteam_id\tteam_name\tteam_minutes\tteam_fgm\tteam_fga\tteam_three_fgm\tteam_three_fga\tteam_ft\tteam_fta\tteam_pts\tteam_offreb\tteam_defreb\tteam_totreb\tteam_ast\tteam_to\tteam_stl\tteam_blk\tteam_fouls\n")
+    #team_data_w.writelines("game_id\tgame_date\tsite\tteam_id\tteam_name\tteam_minutes\tteam_fgm\tteam_fga\tteam_three_fgm\tteam_three_fga\tteam_ft\tteam_fta\tteam_pts\tteam_offreb\tteam_defreb\tteam_totreb\tteam_ast\tteam_to\tteam_stl\tteam_blk\tteam_fouls\n")
 
 
 if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats == 1) or (scrapersettings.ind_team_stats == 1):
@@ -57,7 +56,24 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
         headertable = tables[0]
         awaystats = tables[1]
         homestats = tables[2]
-
+        # Dynamically write column headers
+        if value == 0:
+            ind_col_headers = ["player_id","team_id","team_name"]
+            team_col_headers = ["game_id,game_date,site,team_id,team_name"]
+            for rowno, row in enumerate(awaystats.findAll('th')):
+                ind_col_headers.append(row.text)
+                team_col_headers.append(row.text)
+            for item in ind_col_headers:
+                if item == ind_col_headers[len(ind_col_headers)-1]:
+                    player_data_w.write("\t" + item + "\n")
+                player_data_w.write("%s\t" % item)
+            for item in team_col_headers:
+                if item == team_col_headers[len(team_col_headers)-1]:
+                    team_data_w.write("\t" + item + "\n")
+                team_data_w.writelines("%s\t" % item)
+                
+            
+        
         # Get Participants
         away_team_header = headertable.findAll('tr')[1]
         tds = away_team_header.findAll('td')
@@ -94,7 +110,7 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
         except:
             gamedate = "ERROR!"
 
-        # Get Away Team Data
+        # Get Away Team Data - Ind stats
         for rowno, row in enumerate(awaystats.findAll('tr', class_='smtext')[:-1]):
             tds = row.findAll('td')
             try:
@@ -114,86 +130,102 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
             except:
                 pos = "ERROR!"
             try:
-                minutes = str(tds[2].get_text().encode('utf-8').strip())
-                minutes = alphanum.sub('', minutes)
+                # G
+                g = str(tds[2].get_text().encode('utf-8').strip())
+                g = alphanum.sub('', g)
             except:
-                minutes = "ERROR!"
+                g = "ERROR!"
             try:
-                fgm = str(tds[3].get_text().encode('utf-8').strip())
-                fgm = alphanum.sub('', fgm)
+                # R
+                r = str(tds[3].get_text().encode('utf-8').strip())
+                r = alphanum.sub('', r)
             except:
-                fgm = "ERROR!"
+                r = "ERROR!"
             try:
-                fga = str(tds[4].get_text().encode('utf-8').strip())
-                fga = alphanum.sub('', fga)
+                # AB
+                ab = str(tds[4].get_text().encode('utf-8').strip())
+                ab = alphanum.sub('', ab)
             except:
-                fga = "ERROR!"
+                ab = "ERROR!"
             try:
-                three_fgm = str(tds[5].get_text().encode('utf-8').strip())
-                three_fgm = alphanum.sub('', three_fgm)
+                # H
+                h = str(tds[5].get_text().encode('utf-8').strip())
+                h = alphanum.sub('', h)
             except:
-                three_fgm = "ERROR!"
+                h = "ERROR!"
             try:
-                three_fga = str(tds[6].get_text().encode('utf-8').strip())
-                three_fga = alphanum.sub('', three_fga)
+                # TWO-B
+                two_b = str(tds[6].get_text().encode('utf-8').strip())
+                two_b = alphanum.sub('', two_b)
             except:
-                three_fga = "ERROR!"
+                two_b = "ERROR!"
             try:
-                ft = str(tds[7].get_text().encode('utf-8').strip())
-                ft = alphanum.sub('', ft)
+                # Three - B
+                three_b = str(tds[7].get_text().encode('utf-8').strip())
+                three_b = alphanum.sub('', three_b)
             except:
-                ft = "ERROR!"
+                three_b = "ERROR!"
             try:
-                fta = str(tds[8].get_text().encode('utf-8').strip())
-                fta = alphanum.sub('', fta)
+                total_b = str(tds[8].get_text().encode('utf-8').strip())
+                total_b = alphanum.sub('', total_b)
             except:
-                fta = "ERROR!"
+                total_b = "ERROR!"
             try:
-                pts = str(tds[9].get_text().encode('utf-8').strip())
-                pts = alphanum.sub('', pts)
+                hr = str(tds[9].get_text().encode('utf-8').strip())
+                hr = alphanum.sub('', hr)
             except:
-                pts = "ERROR!"
+                hr = "ERROR!"
             try:
-                offreb = str(tds[10].get_text().encode('utf-8').strip())
-                offreb = alphanum.sub('', offreb)
+                rbi = str(tds[10].get_text().encode('utf-8').strip())
+                rbi = alphanum.sub('', rbi)
             except:
-                offreb = "ERROR!"
+                rbi = "ERROR!"
             try:
-                defreb = str(tds[11].get_text().encode('utf-8').strip())
-                defreb = alphanum.sub('', defreb)
+                bb = str(tds[11].get_text().encode('utf-8').strip())
+                bb = alphanum.sub('', bb)
             except:
-                defreb = "ERROR!"
+                bb = "ERROR!"
             try:
-                totreb = str(tds[12].get_text().encode('utf-8').strip())
-                totreb = alphanum.sub('', totreb)
+                hbp = str(tds[12].get_text().encode('utf-8').strip())
+                hbp = alphanum.sub('', hbp)
             except:
-                totreb = "ERROR!"
+                hbp = "ERROR!"
             try:
-                ast = str(tds[13].get_text().encode('utf-8').strip())
-                ast = alphanum.sub('', ast)
+                sf = str(tds[13].get_text().encode('utf-8').strip())
+                sf = alphanum.sub('', sf)
             except:
-                ast = "ERROR!"
+                sf = "ERROR!"
             try:
-                to = str(tds[14].get_text().encode('utf-8').strip())
-                to = alphanum.sub('', to)
+                sh = str(tds[14].get_text().encode('utf-8').strip())
+                sh = alphanum.sub('', sh)
             except:
-                to = "ERROR!"
+                sh = "ERROR!"
             try:
-                stl = str(tds[15].get_text().encode('utf-8').strip())
-                stl = alphanum.sub('', stl)
+                k = str(tds[15].get_text().encode('utf-8').strip())
+                k = alphanum.sub('', k)
             except:
-                stl = "ERROR!"
+                k = "ERROR!"
             try:
-                blk = str(tds[16].get_text().encode('utf-8').strip())
-                blk = alphanum.sub('', blk)
+                dp = str(tds[16].get_text().encode('utf-8').strip())
+                dp = alphanum.sub('', dp)
             except:
-                blk = "ERROR!"
+                dp = "ERROR!"
             try:
-                fouls = str(tds[17].get_text().encode('utf-8').strip())
-                fouls = alphanum.sub('', fouls)
+                sb = str(tds[17].get_text().encode('utf-8').strip())
+                sb = alphanum.sub('', sb)
             except:
-                fouls = "ERROR!"
-            ind_stats = [player_id, player_name, away_team, away_team_name, game, pos, minutes, fgm, fga, three_fgm, three_fga, ft, fta, pts, offreb, defreb, totreb, ast, to, stl, blk, fouls]
+                sb = "ERROR!"
+            try:
+                cs = str(tds[18].get_text().encode('utf-8').strip())
+                cs = alphanum.sub('', cs)
+            except:
+                cs = "ERROR!"
+            try:
+                picked = str(tds[19].get_text().encode('utf-8').strip())
+                picked = alphanum.sub('', picked)
+            except:
+                picked = "ERROR!"       
+            ind_stats = [player_id, player_name, away_team, away_team_name, g, pos, r, ab, h, two_b, three_b, total_b, hr, rbi, bb, hbp, sf, sh, k, dp, sb, cs, picked]
             if (scrapersettings.ind_player_stats == 1):
                 writeline = ""
                 for item in ind_stats:
@@ -203,7 +235,7 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
                 writeline += "\n"
                 player_data_w.writelines(writeline)
 
-        # Get Home Team Data
+        # Get Home Team Data - Ind stats
         for rowno, row in enumerate(homestats.findAll('tr', class_='smtext')[:-1]):
             tds = row.findAll('td')
             try:
@@ -223,86 +255,102 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
             except:
                 pos = "ERROR!"
             try:
-                minutes = str(tds[2].get_text().encode('utf-8').strip())
-                minutes = alphanum.sub('', minutes)
+                # G
+                g = str(tds[2].get_text().encode('utf-8').strip())
+                g = alphanum.sub('', g)
             except:
-                minutes = "ERROR!"
+                g = "ERROR!"
             try:
-                fgm = str(tds[3].get_text().encode('utf-8').strip())
-                fgm = alphanum.sub('', fgm)
+                # R
+                r = str(tds[3].get_text().encode('utf-8').strip())
+                r = alphanum.sub('', r)
             except:
-                fgm = "ERROR!"
+                r = "ERROR!"
             try:
-                fga = str(tds[4].get_text().encode('utf-8').strip())
-                fga = alphanum.sub('', fga)
+                # AB
+                ab = str(tds[4].get_text().encode('utf-8').strip())
+                ab = alphanum.sub('', ab)
             except:
-                fga = "ERROR!"
+                ab = "ERROR!"
             try:
-                three_fgm = str(tds[5].get_text().encode('utf-8').strip())
-                three_fgm = alphanum.sub('', three_fgm)
+                # H
+                h = str(tds[5].get_text().encode('utf-8').strip())
+                h = alphanum.sub('', h)
             except:
-                three_fgm = "ERROR!"
+                h = "ERROR!"
             try:
-                three_fga = str(tds[6].get_text().encode('utf-8').strip())
-                three_fga = alphanum.sub('', three_fga)
+                # TWO-B
+                two_b = str(tds[6].get_text().encode('utf-8').strip())
+                two_b = alphanum.sub('', two_b)
             except:
-                three_fga = "ERROR!"
+                two_b = "ERROR!"
             try:
-                ft = str(tds[7].get_text().encode('utf-8').strip())
-                ft = alphanum.sub('', ft)
+                # Three - B
+                three_b = str(tds[7].get_text().encode('utf-8').strip())
+                three_b = alphanum.sub('', three_b)
             except:
-                ft = "ERROR!"
+                three_b = "ERROR!"
             try:
-                fta = str(tds[8].get_text().encode('utf-8').strip())
-                fta = alphanum.sub('', fta)
+                total_b = str(tds[8].get_text().encode('utf-8').strip())
+                total_b = alphanum.sub('', total_b)
             except:
-                fta = "ERROR!"
+                total_b = "ERROR!"
             try:
-                pts = str(tds[9].get_text().encode('utf-8').strip())
-                pts = alphanum.sub('', pts)
+                hr = str(tds[9].get_text().encode('utf-8').strip())
+                hr = alphanum.sub('', hr)
             except:
-                pts = "ERROR!"
+                hr = "ERROR!"
             try:
-                offreb = str(tds[10].get_text().encode('utf-8').strip())
-                offreb = alphanum.sub('', offreb)
+                rbi = str(tds[10].get_text().encode('utf-8').strip())
+                rbi = alphanum.sub('', rbi)
             except:
-                offreb = "ERROR!"
+                rbi = "ERROR!"
             try:
-                defreb = str(tds[11].get_text().encode('utf-8').strip())
-                defreb = alphanum.sub('', defreb)
+                bb = str(tds[11].get_text().encode('utf-8').strip())
+                bb = alphanum.sub('', bb)
             except:
-                defreb = "ERROR!"
+                bb = "ERROR!"
             try:
-                totreb = str(tds[12].get_text().encode('utf-8').strip())
-                totreb = alphanum.sub('', totreb)
+                hbp = str(tds[12].get_text().encode('utf-8').strip())
+                hbp = alphanum.sub('', hbp)
             except:
-                totreb = "ERROR!"
+                hbp = "ERROR!"
             try:
-                ast = str(tds[13].get_text().encode('utf-8').strip())
-                ast = alphanum.sub('', ast)
+                sf = str(tds[13].get_text().encode('utf-8').strip())
+                sf = alphanum.sub('', sf)
             except:
-                ast = "ERROR!"
+                sf = "ERROR!"
             try:
-                to = str(tds[14].get_text().encode('utf-8').strip())
-                to = alphanum.sub('', to)
+                sh = str(tds[14].get_text().encode('utf-8').strip())
+                sh = alphanum.sub('', sh)
             except:
-                to = "ERROR!"
+                sh = "ERROR!"
             try:
-                stl = str(tds[15].get_text().encode('utf-8').strip())
-                stl = alphanum.sub('', stl)
+                k = str(tds[15].get_text().encode('utf-8').strip())
+                k = alphanum.sub('', k)
             except:
-                stl = "ERROR!"
+                k = "ERROR!"
             try:
-                blk = str(tds[16].get_text().encode('utf-8').strip())
-                blk = alphanum.sub('', blk)
+                dp = str(tds[16].get_text().encode('utf-8').strip())
+                dp = alphanum.sub('', dp)
             except:
-                blk = "ERROR!"
+                dp = "ERROR!"
             try:
-                fouls = str(tds[17].get_text().encode('utf-8').strip())
-                fouls = alphanum.sub('', fouls)
+                sb = str(tds[17].get_text().encode('utf-8').strip())
+                sb = alphanum.sub('', sb)
             except:
-                fouls = "ERROR!"
-            ind_stats = [player_id, player_name, home_team, home_team_name, game, pos, minutes, fgm, fga, three_fgm, three_fga, ft, fta, pts, offreb, defreb, totreb, ast, to, stl, blk, fouls]
+                sb = "ERROR!"
+            try:
+                cs = str(tds[18].get_text().encode('utf-8').strip())
+                cs = alphanum.sub('', cs)
+            except:
+                cs = "ERROR!"
+            try:
+                picked = str(tds[19].get_text().encode('utf-8').strip())
+                picked = alphanum.sub('', picked)
+            except:
+                picked = "ERROR!"       
+            ind_stats = [player_id, player_name, home_team, home_team_name, g, pos, r, ab, h, two_b, three_b, total_b, hr, rbi, bb, hbp, sf, sh, k, dp, sb, cs, picked]    
             if (scrapersettings.ind_player_stats == 1):
                 writeline = ""
                 for item in ind_stats:
@@ -316,171 +364,203 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
         away_results = awaystats.findAll('tr', class_='grey_heading')[-1:]
         tds = away_results[0].findAll('td')
         try:
-            minutes = str(tds[2].get_text().encode('utf-8').strip())
-            minutes = alphanum.sub('', minutes)
+            # G
+            g = str(tds[2].get_text().encode('utf-8').strip())
+            g = alphanum.sub('', g)
         except:
-            minutes = "ERROR!"
+            g = "ERROR!"
         try:
-            fgm = str(tds[3].get_text().encode('utf-8').strip())
-            fgm = alphanum.sub('', fgm)
+            # R
+            r = str(tds[3].get_text().encode('utf-8').strip())
+            r = alphanum.sub('', r)
         except:
-            fgm = "ERROR!"
+            r = "ERROR!"
         try:
-            fga = str(tds[4].get_text().encode('utf-8').strip())
-            fga = alphanum.sub('', fga)
+            # AB
+            ab = str(tds[4].get_text().encode('utf-8').strip())
+            ab = alphanum.sub('', ab)
         except:
-            fga = "ERROR!"
+            ab = "ERROR!"
         try:
-            three_fgm = str(tds[5].get_text().encode('utf-8').strip())
-            three_fgm = alphanum.sub('', three_fgm)
+            # H
+            h = str(tds[5].get_text().encode('utf-8').strip())
+            h = alphanum.sub('', h)
         except:
-            three_fgm = "ERROR!"
+            h = "ERROR!"
         try:
-            three_fga = str(tds[6].get_text().encode('utf-8').strip())
-            three_fga = alphanum.sub('', three_fga)
+            # TWO-B
+            two_b = str(tds[6].get_text().encode('utf-8').strip())
+            two_b = alphanum.sub('', two_b)
         except:
-            three_fga = "ERROR!"
+            two_b = "ERROR!"
         try:
-            ft = str(tds[7].get_text().encode('utf-8').strip())
-            ft = alphanum.sub('', ft)
+            # Three - B
+            three_b = str(tds[7].get_text().encode('utf-8').strip())
+            three_b = alphanum.sub('', three_b)
         except:
-            ft = "ERROR!"
+            three_b = "ERROR!"
         try:
-            fta = str(tds[8].get_text().encode('utf-8').strip())
-            fta = alphanum.sub('', fta)
+            total_b = str(tds[8].get_text().encode('utf-8').strip())
+            total_b = alphanum.sub('', total_b)
         except:
-            fta = "ERROR!"
+            total_b = "ERROR!"
         try:
-            pts = str(tds[9].get_text().encode('utf-8').strip())
-            pts = alphanum.sub('', pts)
+            hr = str(tds[9].get_text().encode('utf-8').strip())
+            hr = alphanum.sub('', hr)
         except:
-            pts = "ERROR!"
+            hr = "ERROR!"
         try:
-            offreb = str(tds[10].get_text().encode('utf-8').strip())
-            offreb = alphanum.sub('', offreb)
+            rbi = str(tds[10].get_text().encode('utf-8').strip())
+            rbi = alphanum.sub('', rbi)
         except:
-            offreb = "ERROR!"
+            rbi = "ERROR!"
         try:
-            defreb = str(tds[11].get_text().encode('utf-8').strip())
-            defreb = alphanum.sub('', defreb)
+            bb = str(tds[11].get_text().encode('utf-8').strip())
+            bb = alphanum.sub('', bb)
         except:
-            defreb = "ERROR!"
+            bb = "ERROR!"
         try:
-            totreb = str(tds[12].get_text().encode('utf-8').strip())
-            totreb = alphanum.sub('', totreb)
+            hbp = str(tds[12].get_text().encode('utf-8').strip())
+            hbp = alphanum.sub('', hbp)
         except:
-            totreb = "ERROR!"
+            hbp = "ERROR!"
         try:
-            ast = str(tds[13].get_text().encode('utf-8').strip())
-            ast = alphanum.sub('', ast)
+            sf = str(tds[13].get_text().encode('utf-8').strip())
+            sf = alphanum.sub('', sf)
         except:
-            ast = "ERROR!"
+            sf = "ERROR!"
         try:
-            to = str(tds[14].get_text().encode('utf-8').strip())
-            to = alphanum.sub('', to)
+            sh = str(tds[14].get_text().encode('utf-8').strip())
+            sh = alphanum.sub('', sh)
         except:
-            to = "ERROR!"
+            sh = "ERROR!"
         try:
-            stl = str(tds[15].get_text().encode('utf-8').strip())
-            stl = alphanum.sub('', stl)
+            k = str(tds[15].get_text().encode('utf-8').strip())
+            k = alphanum.sub('', k)
         except:
-            stl = "ERROR!"
+            k = "ERROR!"
         try:
-            blk = str(tds[16].get_text().encode('utf-8').strip())
-            blk = alphanum.sub('', blk)
+            dp = str(tds[16].get_text().encode('utf-8').strip())
+            dp = alphanum.sub('', dp)
         except:
-            blk = "ERROR!"
+            dp = "ERROR!"
         try:
-            fouls = str(tds[17].get_text().encode('utf-8').strip())
-            fouls = alphanum.sub('', fouls)
+            sb = str(tds[17].get_text().encode('utf-8').strip())
+            sb = alphanum.sub('', sb)
         except:
-            fouls = "ERROR!"
-        away_team_stats = [away_team, away_team_name, minutes, fgm, fga, three_fgm, three_fga, ft, fta, pts, offreb, defreb, totreb, ast, to, stl, blk, fouls]
+            sb = "ERROR!"
+        try:
+            cs = str(tds[18].get_text().encode('utf-8').strip())
+            cs = alphanum.sub('', cs)
+        except:
+            cs = "ERROR!"
+        try:
+            picked = str(tds[19].get_text().encode('utf-8').strip())
+            picked = alphanum.sub('', picked)
+        except:
+            picked = "ERROR!"       
+        away_team_stats = [away_team, away_team_name, g, r, ab, h, two_b, three_b, total_b, hr, rbi, bb, hbp, sf, sh, k, dp, sb, cs, picked]
 
         # Get Home Team Data
         home_results = homestats.findAll('tr', class_='grey_heading')[-1:]
         tds = home_results[0].findAll('td')
         try:
-            minutes = str(tds[2].get_text().encode('utf-8').strip())
-            minutes = alphanum.sub('', minutes)
+            # G
+            g = str(tds[2].get_text().encode('utf-8').strip())
+            g = alphanum.sub('', g)
         except:
-            minutes = "ERROR!"
+            g = "ERROR!"
         try:
-            fgm = str(tds[3].get_text().encode('utf-8').strip())
-            fgm = alphanum.sub('', fgm)
+            # R
+            r = str(tds[3].get_text().encode('utf-8').strip())
+            r = alphanum.sub('', r)
         except:
-            fgm = "ERROR!"
+            r = "ERROR!"
         try:
-            fga = str(tds[4].get_text().encode('utf-8').strip())
-            fga = alphanum.sub('', fga)
+            # AB
+            ab = str(tds[4].get_text().encode('utf-8').strip())
+            ab = alphanum.sub('', ab)
         except:
-            fga = "ERROR!"
+            ab = "ERROR!"
         try:
-            three_fgm = str(tds[5].get_text().encode('utf-8').strip())
-            three_fgm = alphanum.sub('', three_fgm)
+            # H
+            h = str(tds[5].get_text().encode('utf-8').strip())
+            h = alphanum.sub('', h)
         except:
-            three_fgm = "ERROR!"
+            h = "ERROR!"
         try:
-            three_fga = str(tds[6].get_text().encode('utf-8').strip())
-            three_fga = alphanum.sub('', three_fga)
+            # TWO-B
+            two_b = str(tds[6].get_text().encode('utf-8').strip())
+            two_b = alphanum.sub('', two_b)
         except:
-            three_fga = "ERROR!"
+            two_b = "ERROR!"
         try:
-            ft = str(tds[7].get_text().encode('utf-8').strip())
-            ft = alphanum.sub('', ft)
+            # Three - B
+            three_b = str(tds[7].get_text().encode('utf-8').strip())
+            three_b = alphanum.sub('', three_b)
         except:
-            ft = "ERROR!"
+            three_b = "ERROR!"
         try:
-            fta = str(tds[8].get_text().encode('utf-8').strip())
-            fta = alphanum.sub('', fta)
+            total_b = str(tds[8].get_text().encode('utf-8').strip())
+            total_b = alphanum.sub('', total_b)
         except:
-            fta = "ERROR!"
+            total_b = "ERROR!"
         try:
-            pts = str(tds[9].get_text().encode('utf-8').strip())
-            pts = alphanum.sub('', pts)
+            hr = str(tds[9].get_text().encode('utf-8').strip())
+            hr = alphanum.sub('', hr)
         except:
-            pts = "ERROR!"
+            hr = "ERROR!"
         try:
-            offreb = str(tds[10].get_text().encode('utf-8').strip())
-            offreb = alphanum.sub('', offreb)
+            rbi = str(tds[10].get_text().encode('utf-8').strip())
+            rbi = alphanum.sub('', rbi)
         except:
-            offreb = "ERROR!"
+            rbi = "ERROR!"
         try:
-            defreb = str(tds[11].get_text().encode('utf-8').strip())
-            defreb = alphanum.sub('', defreb)
+            bb = str(tds[11].get_text().encode('utf-8').strip())
+            bb = alphanum.sub('', bb)
         except:
-            defreb = "ERROR!"
+            bb = "ERROR!"
         try:
-            totreb = str(tds[12].get_text().encode('utf-8').strip())
-            totreb = alphanum.sub('', totreb)
+            hbp = str(tds[12].get_text().encode('utf-8').strip())
+            hbp = alphanum.sub('', hbp)
         except:
-            totreb = "ERROR!"
+            hbp = "ERROR!"
         try:
-            ast = str(tds[13].get_text().encode('utf-8').strip())
-            ast = alphanum.sub('', ast)
+            sf = str(tds[13].get_text().encode('utf-8').strip())
+            sf = alphanum.sub('', sf)
         except:
-            ast = "ERROR!"
+            sf = "ERROR!"
         try:
-            to = str(tds[14].get_text().encode('utf-8').strip())
-            to = alphanum.sub('', to)
+            sh = str(tds[14].get_text().encode('utf-8').strip())
+            sh = alphanum.sub('', sh)
         except:
-            to = "ERROR!"
+            sh = "ERROR!"
         try:
-            stl = str(tds[15].get_text().encode('utf-8').strip())
-            stl = alphanum.sub('', stl)
+            k = str(tds[15].get_text().encode('utf-8').strip())
+            k = alphanum.sub('', k)
         except:
-            stl = "ERROR!"
+            k = "ERROR!"
         try:
-            blk = str(tds[16].get_text().encode('utf-8').strip())
-            blk = alphanum.sub('', blk)
+            dp = str(tds[16].get_text().encode('utf-8').strip())
+            dp = alphanum.sub('', dp)
         except:
-            blk = "ERROR!"
+            dp = "ERROR!"
         try:
-            fouls = str(tds[17].get_text().encode('utf-8').strip())
-            fouls = alphanum.sub('', fouls)
+            sb = str(tds[17].get_text().encode('utf-8').strip())
+            sb = alphanum.sub('', sb)
         except:
-            fouls = "ERROR!"
-        home_team_stats = [home_team, home_team_name, minutes, fgm, fga, three_fgm, three_fga, ft, fta, pts, offreb, defreb, totreb, ast, to, stl, blk, fouls]
+            sb = "ERROR!"
+        try:
+            cs = str(tds[18].get_text().encode('utf-8').strip())
+            cs = alphanum.sub('', cs)
+        except:
+            cs = "ERROR!"
+        try:
+            picked = str(tds[19].get_text().encode('utf-8').strip())
+            picked = alphanum.sub('', picked)
+        except:
+            picked = "ERROR!"       
+        home_team_stats = [home_team, home_team_name, g, r, ab, h, two_b, three_b, total_b, hr, rbi, bb, hbp, sf, sh, k, dp, sb, cs, picked]
 
         total_team_stats = [game, gamedate] + away_team_stats + home_team_stats
         
