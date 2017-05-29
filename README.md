@@ -1,7 +1,7 @@
 =============================      
-NCAA Baseball Stats Scraper
-Author: Meyappan 
-Version: 1.3
+NCAA Baseball Stats Scraper      
+Author: Meyappan       
+Version: 1.3     
 =======
 
 1. Updated the create_ind_stats.py function.
