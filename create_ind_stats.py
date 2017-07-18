@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 if (scrapersettings.ind_game_stats == 1):
     # Create the file headings
     game_data_w = open(scrapersettings.game_data, "w")
-    game_data_w.writelines("game_id\tgame_date\taway_team_id\taway_team_name\taway_g\taway_r\taway_ab\taway_h\taway_two_b\taway_three_b\taway_total_b\taway_hr\taway_rbi\taway_bb\taway_hbp\taway_sf\taway_sh\taway_k\taway_dp\taway_sb\taway_cs\taway_picked\thome_team_id\thome_team_name\thome_g\thome_r\thome_ab\thome_h\thome_two_b\thome_three_b\thome_total_b\thome_hr\thome_rbi\thome_bb\thome_hbp\thome_sf\thome_sh\thome_k\thome_dp\thome_sb\thome_cs\thome_picked\n")
+    game_data_w.writelines("game_id\tgame_date\taway_team_id\taway_team_name\taway_g\taway_r\taway_ab\taway_h\taway_two_b\taway_three_b\taway_total_b\taway_hr\taway_rbi\taway_bb\taway_hbp\taway_sf\taway_sh\taway_k\taway_dp\taway_sb\taway_cs\taway_picked\thome_team_id\thome_team_name\thome_g\thome_r\thome_ab\thome_h\thome_two_b\thome_three_b\thome_total_b\thome_hr\thome_rbi\thome_bb\thome_hbp\thome_sf\thome_sh\thome_k\thome_dp\thome_sb\thome_cs\thome_picked\tneutral\n")
 
 if (scrapersettings.ind_player_stats == 1):
     # Create the file headings
