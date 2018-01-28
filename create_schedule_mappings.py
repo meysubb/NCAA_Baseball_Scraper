@@ -4,7 +4,7 @@
 # Version: 1.0
 # By: Rodrigo Zamith
 # License: MPL 2.0 (see LICENSE file in root folder)
-# Additional thanks: 
+# Additional thanks:
 ##############################################################
 
 # Import modules and libraries
@@ -12,6 +12,7 @@ import scraperfunctions
 import scrapersettings
 import csv
 from bs4 import BeautifulSoup
+import requests
 
 if (scrapersettings.map_schedule == 1):
     print "Generating schedule mappings"
@@ -28,11 +29,13 @@ if (scrapersettings.map_schedule == 1):
     for value, team in enumerate(team_mapping): # For each team in our dictionary
         if scrapersettings.debugmode == 1: print "Processing team " + str(team) + " (" + str(value+1) + " of " + str(len(team_mapping)) + ")"
         try:
-            team_mainpage_data = scraperfunctions.grabber(team_mapping[team][1], scrapersettings.params, scrapersettings.http_header) # Grab the main page for each team
+            #team_mainpage_data = scraperfunctions.grabber(team_mapping[team][1], scrapersettings.params, scrapersettings.http_header) # Grab the main page for each team
+            result = requests.get(team_mapping[team][1])
+            c = result.content
         except:
             print "Error getting data. Moving on to next game."
             continue
-        team_mainpage_data_soup = BeautifulSoup(team_mainpage_data) # Soupify that page
+        team_mainpage_data_soup = BeautifulSoup(c)
         gamelinks = [] # Create a blank list for each game
         for link in team_mainpage_data_soup.find_all('a'): # Locate all links in the document
             if "game/index/" in link.get('href'): # If they contain a URL segment suggesting it is a game...
