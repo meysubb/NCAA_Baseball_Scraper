@@ -4,7 +4,7 @@
 # Version: 1.0
 # By: Rodrigo Zamith
 # License: MPL 2.0 (see LICENSE file in root folder)
-# Additional thanks: 
+# Additional thanks:
 # Refer to http://stats.ncaa.org/team/inst_team_list?sport_code=MBB&division=1 in setting these variables
 ##############################################################
 
@@ -32,7 +32,7 @@ schedule_mappingfile = "mappings/schedule_mappings.tsv" # Data file for schedule
 summary_hitting_data = "data/summary_hitting_data.tsv" # Data file for individual player summary statistics
 summary_pitching_data = "data/summary_pitching_data.tsv"
 summary_team_hitting_data = "data/summary_team_hitting_data.tsv" # Data file for team summary statistics
-summary_team_pitching_data = "data/summary_team_pitching_data.tsv" 
+summary_team_pitching_data = "data/summary_team_pitching_data.tsv"
 game_data = "data/game_data.tsv" # Data file for each game
 player_data = "data/player_data.tsv" # Data file for each player
 team_data = "data/team_data.tsv" # Data file for each team

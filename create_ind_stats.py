@@ -3,7 +3,7 @@
 # Program name: NCAA Baseball Stats Scraper
 # Version: 1.3
 # License: MPL 2.0 (see LICENSE file in root folder)
-# Additional thanks: 
+# Additional thanks:
 ##############################################################
 
 # Import modules and libraries
@@ -31,7 +31,7 @@ if (scrapersettings.ind_team_stats == 1):
 
 if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats == 1) or (scrapersettings.ind_team_stats == 1):
     print "Generating individual statistics for players and/or teams"
-    
+
     # Grab data
     # Parse our mappings file to get our list of teams
     team_mapping = scraperfunctions.get_team_mappings()
@@ -58,22 +58,27 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
         homestats = tables[2]
         # Dynamically write column headers
         if value == 0:
-            ind_col_headers = ["player_id","team_id","team_name"]
+            ind_col_headers = ["player_id","player_name","team_id","team_name","game_date"]
             team_col_headers = ["game_id,game_date,site,team_id,team_name"]
             for rowno, row in enumerate(awaystats.findAll('th')):
                 ind_col_headers.append(row.text)
                 team_col_headers.append(row.text)
             for item in ind_col_headers:
                 if item == ind_col_headers[len(ind_col_headers)-1]:
-                    player_data_w.write("\t" + item + "\n")
-                player_data_w.write("%s\t" % item)
+                    player_data_w.write(item + "\n")
+                else:
+                    if item == "Player":
+                        pass
+                    else:
+                        player_data_w.write("%s\t" % item)
             for item in team_col_headers:
                 if item == team_col_headers[len(team_col_headers)-1]:
-                    team_data_w.write("\t" + item + "\n")
-                team_data_w.writelines("%s\t" % item)
-                
-            
-        
+                    team_data_w.write(item + "\n")
+                else:
+                    team_data_w.writelines("%s\t" % item)
+
+
+
         # Get Participants
         away_team_header = headertable.findAll('tr')[1]
         tds = away_team_header.findAll('td')
@@ -111,7 +116,7 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
             gamedate = "ERROR!"
 
         # Get Away Team Data - Ind stats
-        for rowno, row in enumerate(awaystats.findAll('tr', class_='smtext')[:-1]):
+        for rowno, row in enumerate(awaystats.findAll('tr', class_='smtext')):
             tds = row.findAll('td')
             try:
                 player_id =  str(tds[0].find('a').get('href').split('=')[-1].encode('utf-8').strip())
@@ -224,19 +229,25 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
                 picked = str(tds[19].get_text().encode('utf-8').strip())
                 picked = alphanum.sub('', picked)
             except:
-                picked = "ERROR!"       
-            ind_stats = [player_id, player_name, away_team, away_team_name, g, pos, r, ab, h, two_b, three_b, total_b, hr, rbi, bb, hbp, sf, sh, k, dp, sb, cs, picked]
+                picked = "ERROR!"
+            try:
+                rbi2 = str(tds[20].get_text().encode('utf-8').strip())
+                rbi2 = alphanum.sub('', rbi2)
+            except:
+                rbi2 = "ERROR!"
+            ind_stats = [player_id, player_name, away_team, away_team_name, gamedate ,pos,g, r, ab, h, two_b, three_b, total_b, hr, rbi, bb, hbp, sf, sh, k, dp,cs, picked, sb, rbi2]
             if (scrapersettings.ind_player_stats == 1):
                 writeline = ""
                 for item in ind_stats:
                     writeline += str(item) + "\t"
-                writeline += str(gamedate) + "\t" + str(neutral)
+                #str(gamedate) +
+                writeline +=  "\t" + str(neutral)
                 #writeline = re.sub('\t$', '', writeline)
                 writeline += "\n"
                 player_data_w.writelines(writeline)
 
         # Get Home Team Data - Ind stats
-        for rowno, row in enumerate(homestats.findAll('tr', class_='smtext')[:-1]):
+        for rowno, row in enumerate(homestats.findAll('tr', class_='smtext')):
             tds = row.findAll('td')
             try:
                 player_id =  str(tds[0].find('a').get('href').split('=')[-1].encode('utf-8').strip())
@@ -349,8 +360,13 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
                 picked = str(tds[19].get_text().encode('utf-8').strip())
                 picked = alphanum.sub('', picked)
             except:
-                picked = "ERROR!"       
-            ind_stats = [player_id, player_name, home_team, home_team_name, g, pos, r, ab, h, two_b, three_b, total_b, hr, rbi, bb, hbp, sf, sh, k, dp, sb, cs, picked]    
+                picked = "ERROR!"
+            try:
+                rbi2 = str(tds[20].get_text().encode('utf-8').strip())
+                rbi2 = alphanum.sub('', rbi2)
+            except:
+                rbi2 = "ERROR!"
+            ind_stats = [player_id, player_name, home_team, home_team_name, gamedate ,pos,g, r, ab, h, two_b, three_b, total_b, hr, rbi, bb, hbp, sf, sh, k, dp,cs, picked, sb, rbi2]
             if (scrapersettings.ind_player_stats == 1):
                 writeline = ""
                 for item in ind_stats:
@@ -458,7 +474,7 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
             picked = str(tds[19].get_text().encode('utf-8').strip())
             picked = alphanum.sub('', picked)
         except:
-            picked = "ERROR!"       
+            picked = "ERROR!"
         away_team_stats = [away_team, away_team_name, g, r, ab, h, two_b, three_b, total_b, hr, rbi, bb, hbp, sf, sh, k, dp, sb, cs, picked]
 
         # Get Home Team Data
@@ -559,17 +575,17 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
             picked = str(tds[19].get_text().encode('utf-8').strip())
             picked = alphanum.sub('', picked)
         except:
-            picked = "ERROR!"       
+            picked = "ERROR!"
         home_team_stats = [home_team, home_team_name, g, r, ab, h, two_b, three_b, total_b, hr, rbi, bb, hbp, sf, sh, k, dp, sb, cs, picked]
 
         total_team_stats = [game, gamedate] + away_team_stats + home_team_stats
-        
+
         if (scrapersettings.ind_game_stats == 1):
             writeline = ""
             for item in total_team_stats:
                 writeline += str(item) + "\t"
             writeline += str(neutral)
-            #writeline = re.sub('\t$', '', writeline)            
+            #writeline = re.sub('\t$', '', writeline)
             writeline += "\n"
             game_data_w.writelines(writeline)
 
