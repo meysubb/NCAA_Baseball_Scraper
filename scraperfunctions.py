@@ -4,7 +4,7 @@
 # Version: 1.0
 # By: Rodrigo Zamith
 # License: MPL 2.0 (see LICENSE file in root folder)
-# Additional thanks: 
+# Additional thanks:
 ##############################################################
 
 import cookielib
@@ -67,7 +67,7 @@ def create_cookie():
     # Create a cookie handler, if necessary
     cookie_jar = cookielib.LWPCookieJar()
     cookie = urllib2.HTTPCookieProcessor(cookie_jar)
-    
+
     # Create an urllib2 opener() using our cookie jar
     opencookies = urllib2.build_opener(cookie)
     return(opencookies)
@@ -78,7 +78,7 @@ def grabber(url, params, http_header):
     cookiejar = create_cookie()
     # Create the HTTP request
     req = urllib2.Request(url, urllib.urlencode(params), http_header)
-    
+
     # Submit the request
     res = cookiejar.open(req)
     data = res.read()
@@ -95,3 +95,12 @@ def get_game_mappings():
     game_map = game_map.readlines()[1:]
     game_map = dict([(var.split("\t")[0], (var.split("\t")[1], var.split("\t")[2], var.split("\t")[3], var.split("\t")[4], var.split("\t")[5].strip("\n"))) for var in game_map])
     return(game_map)
+
+def run_safely(f):
+    try:
+        val = f
+    except:
+        val = 0
+    if val == '':
+        val = 0
+    return(val)

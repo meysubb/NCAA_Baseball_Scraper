@@ -63,6 +63,13 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
             for rowno, row in enumerate(awaystats.findAll('th')):
                 ind_col_headers.append(row.text)
                 team_col_headers.append(row.text)
+        # Dynamically write column headers
+        if value == 0:
+            ind_col_headers = ["player_id","player_name","team_id","team_name","game_date"]
+            team_col_headers = ["game_id,game_date,site,team_id,team_name"]
+            for rowno, row in enumerate(awaystats.findAll('th')):
+                ind_col_headers.append(row.text)
+                team_col_headers.append(row.text)
             for item in ind_col_headers:
                 if item == ind_col_headers[len(ind_col_headers)-1]:
                     player_data_w.write(item + "\n")
@@ -71,12 +78,15 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
                         pass
                     else:
                         player_data_w.write("%s\t" % item)
-            for item in team_col_headers:
-                if item == team_col_headers[len(team_col_headers)-1]:
+            for row,item in enumerate(team_col_headers):
+                if row == 0:
+                    game_list = [x.strip() for x in item.split(',')]
+                    for val in game_list:
+                        team_data_w.write("%s\t" % item)
+                elif item == team_col_headers[len(team_col_headers)-1]:
                     team_data_w.write(item + "\n")
                 else:
                     team_data_w.writelines("%s\t" % item)
-
 
 
         # Get Participants

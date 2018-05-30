@@ -14,6 +14,8 @@ import csv
 from bs4 import BeautifulSoup
 import requests
 
+
+
 if (scrapersettings.map_schedule == 1):
     print "Generating schedule mappings"
     # Create the file headings
