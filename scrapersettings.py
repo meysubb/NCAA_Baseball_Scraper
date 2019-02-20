@@ -9,8 +9,8 @@
 ##############################################################
 
 # Select year for parsing
-academic_year = "2018"
-yearIndexDict = {"2018":"12973","2017":"12560","2016":"12360","2015":"12080","2014":"11620","2013":"11320","2012":"10942","2011":"10561","2010":"10240"}
+academic_year = "2019"
+yearIndexDict = {"2019":"14781","2018":"12973","2017":"12560","2016":"12360","2015":"12080","2014":"11620","2013":"11320","2012":"10942","2011":"10561","2010":"10240"}
 year_index = yearIndexDict[academic_year]
 
 # What do you want to do? (Note: Lower tiers need higher tiers, i.e., ind_game_stats requires map_players (Tier 2), which requires map_teams (Tier 1).)
