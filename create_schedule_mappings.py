@@ -1,8 +1,6 @@
 #!/usr/bin/python
 ##############################################################
-# Program name: NCAA Basketball Stats Scraper (Schedule Mapping Module)
-# Version: 1.0
-# By: Rodrigo Zamith
+# Program name: NCAA Baseball Stats Scraper (Schedule Mapping Module)
 # License: MPL 2.0 (see LICENSE file in root folder)
 # Additional thanks:
 ##############################################################

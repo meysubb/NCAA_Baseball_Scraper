@@ -1,8 +1,6 @@
 #!/usr/bin/python
 ##############################################################
-# Program name: NCAA Basketball Stats Scraper (Player Mapping and Summary Stats Module)
-# Version: 1.0
-# By: Rodrigo Zamith
+# Program name: NCAA Basetball Stats Scraper (Player Mapping and Summary Stats Module)
 # License: MPL 2.0 (see LICENSE file in root folder)
 # Additional thanks:
 ##############################################################
@@ -91,7 +89,7 @@ if (scrapersettings.map_players == 1) or (scrapersettings.summary_players == 1) 
         pitching_team_name = team_mapping[team][0]
         pitching_page_data = scraperfunctions.grabber(pitching_roster_url,scrapersettings.params,scrapersettings.http_header)
         pitching_page_data_soup = BeautifulSoup(pitching_page_data)
-        pitching_stat_grid = pitching_page_data_soup.select('#stat_grid')
+        pitching_stat_grid = pitching_page_data_soup.select('#stat_grid td , .sorting_asc , .sorting')
 
         ## Get pitching header names
         for row,val in enumerate(pitching_page_data_soup.select('th')):
