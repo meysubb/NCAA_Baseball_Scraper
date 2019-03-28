@@ -6,6 +6,8 @@
 ##############################################################
 
 # Import modules and libraries
+import dropbox
+import os
 import scraperfunctions
 import scrapersettings
 import csv
@@ -248,3 +250,27 @@ if (scrapersettings.map_players == 1):
     player_dict = dict([(case[0], (case[1:])) for case in player_list]) # Create a dictionary from our list so we don't have any duplicate entries
     for item in player_dict: # For each item on that list
         player_mappingfile_w.writelines(str(item) + "\t" + player_dict[item][1] + "\t" + player_dict[item][0] + "\n")
+
+
+token = os.environ['DROPBOX_TOKEN']
+dbx = dropbox.Dropbox(token)
+
+f = open('data/summary_hitting_data.tsv', 'rb')
+response = dbx.files_upload(f.read(), 
+'/Heroku_NCAA_D1_Baseball_Data/summary_hitting_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
+f.close()
+
+f2 = open('data/summary_pitching_data.tsv', 'rb')
+response = dbx.files_upload(f2.read(), 
+'/Heroku_NCAA_D1_Baseball_Data/summary_pitching_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
+f2.close()
+
+f3 = opem('data/summary_hitting_data.tsv','rb')
+response = dbx.files_upload(f3.read(),
+'/Heroku_NCAA_D1_Baseball_Data/summary_team_hitting_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
+f3.close()
+
+f4 = open('data/summary_pitching_data.tsv','rb')
+response = dbx.files_upload(f4.read(),
+'/Heroku_NCAA_D1_Baseball_Data/summary_team_pitching_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
+f4.close()

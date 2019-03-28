@@ -7,6 +7,8 @@
 ##############################################################
 
 # Import modules and libraries
+import os
+import dropbox
 import scraperfunctions
 import scrapersettings
 import csv
@@ -621,3 +623,22 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
             team_data_w.writelines(writeline)
 
     print "Successfully generated individual statistics for players and/or teams"
+
+
+token = os.environ['DROPBOX_TOKEN']
+dbx = dropbox.Dropbox(token)
+
+f5 = open('data/game_data.tsv', 'rb')
+response = dbx.files_upload(f5.read(),
+'/Heroku_NCAA_D1_Baseball_Data/game_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
+f5.close()
+
+f6 = open('data/player_data.tsv', 'rb')
+response = dbx.files_upload(f6.read(),
+'/Heroku_NCAA_D1_Baseball_Data/player_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
+f6.close()
+
+f7 = open('data/team_data.tsv','rb')
+response = dbx.files_upload(f7.read(),
+'/Heroku_NCAA_D1_Baseball_Data/team_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
+f7.close()
