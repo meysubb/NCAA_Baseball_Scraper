@@ -27,7 +27,7 @@ ind_team_stats = 1 # Get individual team statistics (a line per team, such that 
 # Where do you want to save the data?
 team_mappingfile = "mappings/team_mappings.tsv" # Data file for team mappings
 player_mappingfile = "mappings/player_mappings.tsv" # Data file for player mappings
-schedule_mappingfile = "mappings/schedule_mappings.tsv" # Data file for schedule mappings
+schedule_mappingfile = "mappings/schedule_mappings.csv" # Data file for schedule mappings
 summary_hitting_data = "data/summary_hitting_data.tsv" # Data file for individual player summary statistics
 summary_pitching_data = "data/summary_pitching_data.tsv"
 summary_team_hitting_data = "data/summary_team_hitting_data.tsv" # Data file for team summary statistics

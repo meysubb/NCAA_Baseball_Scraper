@@ -87,7 +87,7 @@ if (scrapersettings.map_players == 1) or (scrapersettings.summary_players == 1) 
                 summary_hitting_data_w.writelines(writeline)
 
         # Get Pitching Data
-        pitching_roster_url = str(scrapersettings.domain_base) + "/team/" + team + "/stats?id=" + str(scrapersettings.year_index) + "&year_stat_category_id=11954"
+        pitching_roster_url = str(scrapersettings.domain_base) + "/team/" + team + "/stats?id=" + str(scrapersettings.year_index) + "&year_stat_category_id=14644"
         pitching_team_name = team_mapping[team][0]
         pitching_page_data = scraperfunctions.grabber(pitching_roster_url,scrapersettings.params,scrapersettings.http_header)
         pitching_page_data_soup = BeautifulSoup(pitching_page_data)
