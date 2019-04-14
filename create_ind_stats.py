@@ -14,6 +14,7 @@ import scrapersettings
 import csv
 import re
 from bs4 import BeautifulSoup
+import requests
 
 if (scrapersettings.ind_game_stats == 1):
     # Create the file headings
@@ -48,7 +49,8 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
         if scrapersettings.debugmode == 1: print "Processing game " + str(game) + " (" + str(value+1) + " of " + str(len(game_mapping)) + ")"
         game_url = game_mapping[game][4]
         try:
-            game_page_data = scraperfunctions.grabber(game_url, scrapersettings.params, scrapersettings.http_header) # Grab the main page for each team
+            result = requests.get(game_url)
+            game_page_data = result.content
         except:
             print "Error getting data. Moving on to next game."
             continue
