@@ -56,22 +56,6 @@ if (scrapersettings.ind_game_stats == 1) or (scrapersettings.ind_player_stats ==
             print "Error getting data. Moving on to next game."
             continue
         game_page_data_soup = BeautifulSoup(game_page_data)
-        game_urls = game_page_data_soup.find_all('a')
-        valid_links = []
-        for val in game_urls:
-            if "box_score/" in val.get('href'):
-                valid_links.append(val.get('href'))
-        # proper url
-        game_url = "http://stats.ncaa.org" + valid_links[0]
-        print 'NEW URL \n'
-        print(game_url)
-        try:
-            result = requests.get(game_url)
-            game_page_data = result.content
-        except:
-            print "Error getting data. Moving on to next game."
-            continue
-        game_page_data_soup = BeautifulSoup(game_page_data)
         
         ### Wait to do something else here 
         neutral = game_mapping[game][3]

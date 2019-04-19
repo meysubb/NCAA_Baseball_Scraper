@@ -28,7 +28,9 @@ if (scrapersettings.map_schedule == 1):
         if scrapersettings.debugmode == 1: print "Processing team " + str(team) + " (" + str(value+1) + " of " + str(len(team_mapping)) + ")"
         try:
             #team_mainpage_data = scraperfunctions.grabber(team_mapping[team][1], scrapersettings.params, scrapersettings.http_header) # Grab the main page for each team
-            result = requests.get(team_mapping[team][1])
+            url = 'https://stats.ncaa.org/player/game_by_game?game_sport_year_ctl_id=' + \
+                str(scrapersettings.year_index) + '&org_id=' + str(team) + '&stats_player_seq=-100'
+            result = requests.get(url)
             c = result.content
         except:
             print "Error getting data. Moving on to next game."
@@ -36,12 +38,13 @@ if (scrapersettings.map_schedule == 1):
         team_mainpage_data_soup = BeautifulSoup(c)
         gamelinks = [] # Create a blank list for each game
         for link in team_mainpage_data_soup.find_all('a'): # Locate all links in the document
-            if "contests/" in link.get('href'): # If they contain a URL segment suggesting it is a game...
+            if "/game/index/" in link.get('href'): # If they contain a URL segment suggesting it is a game...
                 if link.get('href') == "/contests/scoreboards" :
                     continue 
                 game_link = str(scrapersettings.domain_base + link.get('href')).split("?")[0] # Strip out any URL variables since we don't need them
                 try:
-                    opponent_id = link.find_previous("td").find_previous("td").find("a").get('href').split("/teams/")[1]
+                    opponent_id = link.find_previous("td").find(
+                        "a").get('href').split("/teams/")[1]
                 except:
                     opponent_id = 0
                 opponent_text = link.find_previous("td").find_previous("td").get_text().encode('utf-8').strip()
@@ -57,7 +60,7 @@ if (scrapersettings.map_schedule == 1):
                     away_team = opponent_id
                     neutral = "0"
                 date = link.find_previous("td").find_previous("td").find_previous("td").get_text() # Get the date for the game
-                game_id = game_link.split("/")[-2] # Get the game ID from the URL (last set of digits)
+                game_id = game_link.split("/")[-1] # Get the game ID from the URL (last set of digits)
                 schedule_list.append([game_id, home_team, away_team, date, neutral, game_link]) # Append all of this information to our master schedule list
                 
 
