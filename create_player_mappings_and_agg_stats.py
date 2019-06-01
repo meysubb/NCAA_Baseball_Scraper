@@ -6,7 +6,7 @@
 ##############################################################
 
 # Import modules and libraries
-import dropbox
+#import dropbox
 import os
 import scraperfunctions
 import scrapersettings
@@ -59,7 +59,7 @@ if (scrapersettings.map_players == 1) or (scrapersettings.summary_players == 1) 
         if hit_b:
             writeline = ""
             for item in hit_headers:
-                writeline += str(item) + "\t"
+                writeline += str(item.encode('utf-8')) + "\t"
             writeline = re.sub('\t$', '', writeline)
             writeline += "\n"
             summary_hitting_data_w.writelines(writeline)
@@ -100,28 +100,31 @@ if (scrapersettings.map_players == 1) or (scrapersettings.summary_players == 1) 
         if pit_b:
             writeline = ""
             for item in pit_headers:
-                writeline += str(item) + "\t"
+                writeline += str(item.encode('utf-8')) + "\t"
             writeline = re.sub('\t$', '', writeline)
             writeline += "\n"
             summary_pitching_data_w.writelines(writeline)
             pit_b=False
 
-        for rownum, raw in enumerate(pitching_stat_grid[0].find('tbody').findAll('tr')):
-            pit_tds = raw.findAll('td')
-            pit_player_id = pit_tds[1].find('a').get('href').split('=')[-1]
-            pitstats = [pit_player_id,team,pitching_team_name]
-            for val, row in enumerate(pit_tds):
-                if val == 1:
-                    result = scraperfunctions.run_safely(row.find('a').get_text().encode('utf-8').strip())
-                else:
-                    result = scraperfunctions.run_safely(row.get_text().strip())
-                pitstats.append(result)
-                pitching_list.append(pitstats)
+        #for rownum, raw in enumerate(pitching_stat_grid):
+        pit_tds = pitching_stat_grid
+        pit_player_id = pit_tds[1].find('a').get('href').split('=')[-1]
+        pitstats = [pit_player_id,team,pitching_team_name]
+        for val, row in enumerate(pit_tds):
+            if val == 1:
+                result = scraperfunctions.run_safely(row.find('a').get_text().encode('utf-8').strip())
+            else:
+                result = scraperfunctions.run_safely(row.get_text().strip())
+            pitstats.append(result)
+            pitching_list.append(pitstats)
 
             if (scrapersettings.summary_players == 1):
                 writeline = ""
                 for item in pitstats:
-                    writeline += str(item) + "\t"
+                    if isinstance(item,unicode):
+                        writeline += str(item.encode('utf-8')) + "\t"
+                    else:
+                        writeline += str(item) + "\t"
                 writeline = re.sub('\t$', '', writeline)
                 writeline += "\n"
                 summary_pitching_data_w.writelines(writeline)
@@ -180,13 +183,13 @@ if (scrapersettings.map_players == 1) or (scrapersettings.summary_players == 1) 
         if (scrapersettings.summary_teams == 1):
             writeline = ""
             for item in team_stats_total:
-                writeline += str(item) + "\t"
+                writeline += str(item.encode('utf-8')) + "\t"
             writeline = re.sub('\t$', '', writeline)
             writeline += "\n"
             summary_team_hitting_data_w.writelines(writeline)
 
        # Get Pitching Team Data
-        pit_team_tds = pitching_stat_grid[0].find('tfoot').findAll('tr')[0].findAll('td')
+        pit_team_tds = pitching_page_data_soup.find('tfoot').findAll('tr')[0].findAll('td')
         pit_team_ERA = str(pit_team_tds[9].get_text().encode('utf-8').strip())
         pit_team_IP = str(pit_team_tds[10].get_text().encode('utf-8').strip())
         pit_team_H = str(pit_team_tds[12].get_text().encode('utf-8').strip())
@@ -211,7 +214,7 @@ if (scrapersettings.map_players == 1) or (scrapersettings.summary_players == 1) 
         pit_team_KL = str(pit_team_tds[37].get_text().encode('utf-8').strip())
         pit_team_stats = [pit_team_ERA,pit_team_IP,pit_team_H,pit_team_R,pit_team_ER,pit_team_BB,pit_team_SO,pit_team_SHO,pit_team_BF,pit_team_POAB,pit_team_2BA,pit_team_3BA,pit_team_BK,pit_team_HRA,pit_team_WP,pit_team_HB,pit_team_IBB,pit_team_SHA,pit_team_SFA,pit_team_GO,pit_team_FO,pit_team_KL]
        # Get Pitching Opposing Team Data
-        opp_pit_team_tds = pitching_stat_grid[0].find('tfoot').findAll('tr')[1].findAll('td')
+        opp_pit_team_tds = pitching_page_data_soup.find('tfoot').findAll('tr')[1].findAll('td')
         opp_pit_team_ERA = str(opp_pit_team_tds[9].get_text().encode('utf-8').strip())
         opp_pit_team_IP = str(opp_pit_team_tds[10].get_text().encode('utf-8').strip())
         opp_pit_team_H = str(opp_pit_team_tds[12].get_text().encode('utf-8').strip())
@@ -239,7 +242,7 @@ if (scrapersettings.map_players == 1) or (scrapersettings.summary_players == 1) 
         if (scrapersettings.summary_teams == 1):
              writeline = ""
              for item in pit_stats_total:
-                 writeline += str(item) + "\t"
+                 writeline += str(item.encode('utf-8')) + "\t"
              writeline = re.sub('\t$', '', writeline)
              writeline += "\n"
              summary_team_pitching_data_w.writelines(writeline)
@@ -252,25 +255,25 @@ if (scrapersettings.map_players == 1):
         player_mappingfile_w.writelines(str(item) + "\t" + player_dict[item][1] + "\t" + player_dict[item][0] + "\n")
 
 
-token = os.environ['DROPBOX_TOKEN']
-dbx = dropbox.Dropbox(token)
+#token = os.environ['DROPBOX_TOKEN']
+#dbx = dropbox.Dropbox(token)
 
-f = open('data/summary_hitting_data.tsv', 'rb')
-response = dbx.files_upload(f.read(), 
-'/Heroku_NCAA_D1_Baseball_Data/summary_hitting_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
-f.close()
+#f = open('data/summary_hitting_data.tsv', 'rb')
+#response = dbx.files_upload(f.read(), 
+#'/Heroku_NCAA_D1_Baseball_Data/summary_hitting_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
+#f.close()
 
-f2 = open('data/summary_pitching_data.tsv', 'rb')
-response = dbx.files_upload(f2.read(), 
-'/Heroku_NCAA_D1_Baseball_Data/summary_pitching_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
-f2.close()
+#f2 = open('data/summary_pitching_data.tsv', 'rb')
+#response = dbx.files_upload(f2.read(), 
+#'/Heroku_NCAA_D1_Baseball_Data/summary_pitching_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
+#f2.close()
 
-f3 = opem('data/summary_hitting_data.tsv','rb')
-response = dbx.files_upload(f3.read(),
-'/Heroku_NCAA_D1_Baseball_Data/summary_team_hitting_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
-f3.close()
+#f3 = opem('data/summary_hitting_data.tsv','rb')
+#response = dbx.files_upload(f3.read(),
+#'/Heroku_NCAA_D1_Baseball_Data/summary_team_hitting_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
+#f3.close()
 
-f4 = open('data/summary_pitching_data.tsv','rb')
-response = dbx.files_upload(f4.read(),
-'/Heroku_NCAA_D1_Baseball_Data/summary_team_pitching_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
-f4.close()
+#f4 = open('data/summary_pitching_data.tsv','rb')
+#response = dbx.files_upload(f4.read(),
+#'/Heroku_NCAA_D1_Baseball_Data/summary_team_pitching_data.tsv', mode=dropbox.files.WriteMode("overwrite"))
+#f4.close()
